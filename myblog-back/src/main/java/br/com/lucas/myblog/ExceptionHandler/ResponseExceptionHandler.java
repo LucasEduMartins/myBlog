@@ -1,6 +1,7 @@
 package br.com.lucas.myblog.ExceptionHandler;
 
 import br.com.lucas.myblog.Exceptions.CannotFindResourceException;
+import br.com.lucas.myblog.Exceptions.ConstraintViolationException;
 import br.com.lucas.myblog.Exceptions.DuplicatedDataException;
 import br.com.lucas.myblog.Models.ExceptionResponse;
 import lombok.AllArgsConstructor;
@@ -57,5 +58,11 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), message, request.getDescription(false), fields);
 
         return this.handleExceptionInternal(ex, exceptionResponse, headers, status, request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public final ResponseEntity<ExceptionResponse> handleConstraintViolationException(Exception error, WebRequest request){
+        ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), error.getMessage(), request.getDescription(false), null);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 }

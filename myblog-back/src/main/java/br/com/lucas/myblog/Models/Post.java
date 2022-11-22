@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.implementation.bind.annotation.Default;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,7 +20,6 @@ import java.util.Objects;
 @Entity
 @Table(name="posts")
 public class Post{
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,16 +27,12 @@ public class Post{
     @NotBlank
     private String title;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Post post = (Post) o;
-        return id != null && Objects.equals(id, post.id);
-    }
+    @Enumerated(EnumType.STRING)
+    private PostStatus status;
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    @Enumerated(EnumType.STRING)
+    private PostType type;
+
+    @ManyToOne
+    private User user;
 }
