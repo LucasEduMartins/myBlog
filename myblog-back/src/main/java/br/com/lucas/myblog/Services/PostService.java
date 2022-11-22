@@ -1,10 +1,9 @@
 package br.com.lucas.myblog.Services;
 
 import br.com.lucas.myblog.Exceptions.CannotFindResourceException;
-import br.com.lucas.myblog.Exceptions.ConstraintViolationException;
+import br.com.lucas.myblog.Exceptions.InvalidReferenceIdException;
 import br.com.lucas.myblog.Exceptions.DuplicatedDataException;
 import br.com.lucas.myblog.Models.Post;
-import br.com.lucas.myblog.Models.PublicPost;
 import br.com.lucas.myblog.Models.User;
 import br.com.lucas.myblog.Repositories.PostRepository;
 import br.com.lucas.myblog.Repositories.UserRepository;
@@ -21,12 +20,16 @@ import java.util.Optional;
 public class PostService {
 
     private PostRepository postRepository;
-    private UserRepository userRepository;
+    private UserService userService;
+
+    private User getRelatedUser(long userId){
+        return userService.getRelatedUserById(userId);
+    }
 
     @Transactional
     public Post savePost(Post post) {
+        User user = getRelatedUser(post.getUser().getId());
 
-        User user = userRepository.findById(post.getUser().getId()).orElseThrow(() -> new ConstraintViolationException("User not found!"));
         boolean titleExist = postRepository.existsByTitle(post.getTitle());
         if (titleExist)
             throw new DuplicatedDataException("There is already a post with that title!");
@@ -37,6 +40,8 @@ public class PostService {
 
     @Transactional
     public Post updatePost(Post post) {
+        User user = getRelatedUser(post.getUser().getId());
+
         boolean postExist = postRepository.existsById(post.getId());
         if (!postExist)
             throw new CannotFindResourceException("Post not found!");
@@ -45,6 +50,7 @@ public class PostService {
         if (titleExistInAnotherPost)
             throw new DuplicatedDataException("There is already a post with that title!");
 
+        post.setUser(user);
         return postRepository.save(post);
     }
 

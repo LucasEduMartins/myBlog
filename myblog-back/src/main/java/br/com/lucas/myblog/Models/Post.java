@@ -1,20 +1,19 @@
 package br.com.lucas.myblog.Models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import br.com.lucas.myblog.ValidationsGroups;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.implementation.bind.annotation.Default;
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import javax.validation.groups.ConvertGroup;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -23,6 +22,12 @@ public class Post{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Valid
+    @ConvertGroup(to = ValidationsGroups.RelatedUser.class)
+    @NotNull
+    @ManyToOne
+    private User user;
 
     @NotBlank
     private String title;
@@ -33,6 +38,5 @@ public class Post{
     @Enumerated(EnumType.STRING)
     private PostType type;
 
-    @ManyToOne
-    private User user;
+
 }

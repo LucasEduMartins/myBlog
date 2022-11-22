@@ -1,7 +1,7 @@
 package br.com.lucas.myblog.ExceptionHandler;
 
 import br.com.lucas.myblog.Exceptions.CannotFindResourceException;
-import br.com.lucas.myblog.Exceptions.ConstraintViolationException;
+import br.com.lucas.myblog.Exceptions.InvalidReferenceIdException;
 import br.com.lucas.myblog.Exceptions.DuplicatedDataException;
 import br.com.lucas.myblog.Models.ExceptionResponse;
 import lombok.AllArgsConstructor;
@@ -60,8 +60,8 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return this.handleExceptionInternal(ex, exceptionResponse, headers, status, request);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public final ResponseEntity<ExceptionResponse> handleConstraintViolationException(Exception error, WebRequest request){
+    @ExceptionHandler(InvalidReferenceIdException.class)
+    public final ResponseEntity<ExceptionResponse> handleInvalidReferenceIdException(Exception error, WebRequest request){
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), error.getMessage(), request.getDescription(false), null);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
